@@ -47,7 +47,6 @@ next-env.d.ts
 skills-lock.json
 AGENTS.md
 CLAUDE.md
-/src/generated/prisma
 
 # user-uploaded content (local dev storage; see User.avatarUrl)
 /public/uploads/

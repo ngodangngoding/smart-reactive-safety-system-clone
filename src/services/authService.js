@@ -1,5 +1,5 @@
 import axios from "axios";
-import api from "@/services/apiService.js";
+import api, { API_URL } from "@/services/apiService.js";
 import { REFRESH_TOKEN_KEY, writeTokens, writeContext, patchStoredUser, clearSession } from "@/lib/session.js";
 
 async function startSession(path, body, fallbackMessage) {
@@ -42,7 +42,7 @@ export const getCurrentUser = async () => {
 export const logout = () => {
   const refreshToken = window.localStorage.getItem(REFRESH_TOKEN_KEY);
   if (refreshToken) {
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, { refreshToken }).catch(() => { });
+    axios.post(`${API_URL}/auth/logout`, { refreshToken }).catch(() => { });
   }
   clearSession();
 };

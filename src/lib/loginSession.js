@@ -9,9 +9,11 @@ export async function createLoginSession(user, { viaGoogle = false } = {}) {
   if (user.role === "ADMIN") await assertOrganizationOperational(prisma, user.organizationId);
 
   const now = new Date();
-  await prisma.user
-    .update({ where: { id: user.id }, data: { lastLoginAt: now, ...(linkNow ? { googleLinkedAt: now } : {}) } })
-    .catch((error) => console.error("Failed to record login time:", error.message));
+  try {
+    await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: now, ...(linkNow ? { googleLinkedAt: now } : {}) } });
+  } catch (error) {
+    console.error("Failed to record login time:", error.message);
+  }
   user = { ...user, lastLoginAt: now, ...(linkNow ? { googleLinkedAt: now } : {}) };
 
   return {

@@ -6,18 +6,14 @@ const int = (value, fallback) => {
 const env = process.env;
 
 export const config = {
-  jwtSecret: env.JWT_SECRET,
+  // Demo build: fall back to a fixed demo value so auth works on a bare `npm run dev`
+  // with no .env file at all. Set JWT_SECRET yourself for anything but a demo.
+  jwtSecret: env.JWT_SECRET || "demo-jwt-secret-change-me",
   accessTtl: int(env.ACCESS_TOKEN_TTL_SECONDS, 900),
   refreshTtl: int(env.REFRESH_TOKEN_TTL_SECONDS, 2592000),
 
   google: {
     clientId: env.GOOGLE_CLIENT_ID || "",
-  },
-
-  redis: {
-    url: env.REDIS_URL || `redis://${env.REDIS_HOST || "localhost"}:${env.REDIS_PORT || 6379}`,
-    password: env.REDIS_PASSWORD || undefined,
-    keyPrefix: env.REDIS_KEY_PREFIX || "app:",
   },
 
   businessTimeZone: env.BUSINESS_TIME_ZONE || "Asia/Jakarta",
@@ -39,7 +35,7 @@ export const config = {
   },
 
   telemetryWebhook: {
-    secret: env.TELEMETRY_WEBHOOK_SECRET,
+    secret: env.TELEMETRY_WEBHOOK_SECRET || "demo-webhook-secret-change-me",
     maxBatch: int(env.TELEMETRY_WEBHOOK_MAX_BATCH, 500),
     dedupeTtlSeconds: int(env.TELEMETRY_DEDUPE_TTL_SECONDS, 3600),
   },

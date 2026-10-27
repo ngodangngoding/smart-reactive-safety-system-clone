@@ -6,8 +6,12 @@ import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, writeTokens, clearSession } from "
 
 export { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, clearSession };
 
+// Falls back to a same-origin relative path when NEXT_PUBLIC_API_URL isn't set, so the
+// demo build works with zero env vars (the frontend and API are served from one Next.js app).
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -66,7 +70,7 @@ function refreshAccessToken() {
 
   if (!refreshPromise) {
     refreshPromise = axios
-      .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, { refreshToken })
+      .post(`${API_URL}/auth/refresh`, { refreshToken })
       .then((response) => {
         const tokens = response.data.data;
         writeTokens(tokens);

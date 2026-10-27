@@ -1,7 +1,7 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
+// Documentation only in this demo build: the app runs on an in-memory store
+// (see src/lib/prisma.js), not a real Postgres database. This file stays as the
+// single source of truth for the domain model -- entities, fields, relations,
+// and unique constraints -- that the in-memory store mirrors.
 
 datasource db {
   provider = "postgresql"

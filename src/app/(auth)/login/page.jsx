@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiErrorMessage } from "@/lib/apiError.js";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
@@ -11,8 +11,12 @@ import { ShieldCheck, Eye, EyeOff, TriangleAlert } from "lucide-react";
 import TextInput from "@/components/atoms/TextInput.jsx";
 import Button from "@/components/atoms/Button.jsx";
 import IconButton from "@/components/atoms/IconButton.jsx";
-import { login, loginWithGoogle } from "@/services/authService.js";
+import { getCurrentUser, isAuthenticated, login, loginWithGoogle } from "@/services/authService.js";
 import GoogleSignInButton from "@/components/organisms/GoogleSignInButton.jsx";
+
+function postLoginPath(role) {
+  return role === "SUPERADMIN" ? "/organizations" : role === "PENDING" ? "/pending" : "/dashboard";
+}
 
 const LoginSchema = Yup.object({
   email: Yup.string().email("Enter a valid email address").required("Email is required"),
@@ -35,6 +39,13 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    if (!isAuthenticated()) return;
+    getCurrentUser()
+      .then((me) => router.replace(postLoginPath(me.user.role)))
+      .catch(() => {});
+  }, [router]);
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: LoginSchema,
@@ -42,7 +53,7 @@ export default function LoginPage() {
       setSubmitting(true);
       try {
         const user = await login(values.email, values.password);
-        router.push(user.role === "SUPERADMIN" ? "/organizations" : "/dashboard");
+        router.push(postLoginPath(user.role));
       } catch (error) {
         toast.error(apiErrorMessage(error));
       } finally {
@@ -156,7 +167,7 @@ export default function LoginPage() {
                 onCredential={async (idToken) => {
                   try {
                     const user = await loginWithGoogle(idToken);
-                    router.push(user.role === "SUPERADMIN" ? "/organizations" : user.role === "PENDING" ? "/pending" : "/dashboard");
+                    router.push(postLoginPath(user.role));
                   } catch (error) {
                     toast.error(apiErrorMessage(error));
                   }
